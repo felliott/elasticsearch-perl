@@ -1,6 +1,7 @@
 package Elasticsearch::Bulk;
 
 use Moo;
+with 'Elasticsearch::Role::Is_Sync';
 use Elasticsearch::Util qw(parse_params throw);
 use Try::Tiny;
 use namespace::clean;
@@ -229,9 +230,7 @@ sub reindex {
     my $version_type = $params->{version_type};
 
     if ( ref $src eq 'HASH' ) {
-        require Elasticsearch::Scroll;
-
-        my $scroll = Elasticsearch::Scroll->new(
+        my $scroll = $self->es->scroll_helper(
             es          => $self->es,
             search_type => 'scan',
             size        => 500,
